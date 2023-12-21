@@ -1,6 +1,8 @@
-from tencent_model.cli import parse_opts 
-from tencent_model.brains18 import BrainS18Dataset
-from tencent_model.model import generate_model
+from cli import parse_opts 
+from brains18 import BrainS18Dataset
+from model import generate_model
+from file_process import load_lines
+
 import torch
 import numpy as np
 from torch.utils.data import DataLoader
@@ -9,7 +11,6 @@ from scipy import ndimage
 import nibabel as nib
 import sys
 import os
-from tencent_model.file_process import load_lines
 
 
 def seg_eval(pred, label, clss):
