@@ -1,0 +1,12 @@
+test/**
+train/**
+train_rles.csv
+*.env
+model/**
+*.pyc
+*.avi
+**pycache**
+tencent_model/data/*
+tencent_model/pretrain/*
+tencent_model/trails/*
+*.pth
