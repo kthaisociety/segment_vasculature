@@ -4,6 +4,7 @@ import numpy as np
 import time
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
+from helpers.loss_functions import dice_coeff
 
 def get_default_device():
     if torch.cuda.is_available():
@@ -38,17 +39,20 @@ def train_and_test(model: nn.Module, dataloaders: DataLoader, optimizer: torch.o
                 inputs = sample[0].to(device)
                 masks = sample[1].to(device)
                 
-                masks = masks.unsqueeze(1)
+                #masks = masks.unsqueeze(1)
                 
                 optimizer.zero_grad()
 
                 with torch.set_grad_enabled(phase == 'train'):
+                    print(sample[0].shape)
                     outputs = model(inputs)
+                    print(outputs.shape)
+                    print(sample[1].shape)
 
                     loss = criterion(outputs, masks)
 
                     y_pred = outputs.data.cpu().numpy().ravel()
-                    y_true = masks.data.cpu().numpy().ravel()
+                    y_true = sample[1].numpy().ravel()
 
                     batchsummary[f'{phase}_dice_coeff'].append(dice_coeff(y_pred, y_true))
 

@@ -13,11 +13,12 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
 
-TRAIN_FOLDER = "../../train"
+TRAIN_FOLDER = "/workspaces/segment_vasculature/train"
 
-def preprocess_image(path):
+def preprocess_image(path, three_channels=True):
     img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
-    img = np.tile(img[...,None],[1,1,3])
+    if three_channels:
+        img = np.tile(img[...,None],[1,1,3])
     img = img.astype('float32')
     mx = np.max(img)
     if mx:
@@ -36,11 +37,12 @@ def preprocess_mask(path):
     return msk_ten
 
 class CustomDataset(Dataset):
-    def __init__(self,image_files, mask_files, input_size=(256, 256), augmentation_transforms=None):
+    def __init__(self, image_files, mask_files, input_size=(256, 256), augmentation_transforms=None):
         self.image_files=image_files
         self.mask_files=mask_files
         self.input_size=input_size
         self.augmentation_transforms=augmentation_transforms
+
     def __len__(self):
         return len(self.image_files)
 

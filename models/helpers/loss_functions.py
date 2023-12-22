@@ -1,6 +1,7 @@
 import torch
 from torch.functional import F
 import numpy as np
+import torch.nn as nn
 
 class DiceLoss(nn.Module):
     def __init__(self, weight=None, size_average=True):

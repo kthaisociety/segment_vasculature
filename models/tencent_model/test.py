@@ -51,6 +51,7 @@ def test(data_loader, model, img_names, sets):
     for batch_id, batch_data in enumerate(data_loader):
         # forward
         volume = batch_data
+        print(volume.shape)
         if not sets.no_cuda:
             volume = volume.cuda()
         with torch.no_grad():
