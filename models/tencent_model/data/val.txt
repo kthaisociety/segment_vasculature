@@ -1,0 +1,2 @@
+MRBrainS18/images/070.nii.gz MRBrainS18/labels/070.nii.gz
+MRBrainS18/images/1.nii.gz MRBrainS18/labels/1.nii.gz

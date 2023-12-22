@@ -6,7 +6,4 @@ model/**
 *.pyc
 *.avi
 **pycache**
-tencent_model/data/*
-tencent_model/pretrain/*
-tencent_model/trails/*
 *.pth
