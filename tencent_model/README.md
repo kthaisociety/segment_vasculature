@@ -7,6 +7,8 @@ export SOURCE_TEST=/mnt/e/blood-vessel-segmentation/train
 export SOURCE_MODEL=/mnt/c/tencent-model
 ```
 
+If you run notebooks in the devcontainer, make sure to use the python 3.11.7 interpreter at /usr/local/bin/python
+
 Thereafter run the model using:
 ```bash
 python test.py --no_cuda --resume_path trails/models/resnet_50_epoch_110_batch_0.pth.tar --img_list data/val.txt --data_root ./data

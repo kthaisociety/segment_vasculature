@@ -105,7 +105,7 @@ if __name__ == '__main__':
     net.load_state_dict(new_state_dict)
 
     # data tensor
-    testing_data =BrainS18Dataset(sets.data_root, sets.img_list, sets)
+    testing_data = BrainS18Dataset(sets.data_root, sets.img_list, sets)
     data_loader = DataLoader(testing_data, batch_size=1, shuffle=False, num_workers=1, pin_memory=False)
 
     # testing
