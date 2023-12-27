@@ -1,0 +1,10 @@
+MRBrainS18/images/75.nii.gz MRBrainS18/labels/75.nii.gz
+MRBrainS18/images/14.nii.gz MRBrainS18/labels/14.nii.gz
+MRBrainS18/images/148.nii.gz MRBrainS18/labels/148.nii.gz
+MRBrainS18/images/4.nii.gz MRBrainS18/labels/4.nii.gz
+MRBrainS18/images/5.nii.gz MRBrainS18/labels/5.nii.gz
+MRBrainS18/images/7.nii.gz MRBrainS18/labels/7.nii.gz
+MRBrainS18/images/71.nii.gz MRBrainS18/labels/71.nii.gz
+MRBrainS18/images/72.nii.gz MRBrainS18/labels/72.nii.gz
+MRBrainS18/images/73.nii.gz MRBrainS18/labels/73.nii.gz
+MRBrainS18/images/74.nii.gz MRBrainS18/labels/74.nii.gz

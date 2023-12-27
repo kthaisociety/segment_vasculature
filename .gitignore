@@ -1,0 +1,9 @@
+test/**
+train/**
+train_rles.csv
+*.env
+model/**
+*.pyc
+*.avi
+**pycache**
+*.pth

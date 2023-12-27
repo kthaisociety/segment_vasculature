@@ -1,0 +1,29 @@
+{
+	"name": "Dev container",
+	"build": { 
+		"dockerfile": "Dockerfile"
+	},
+	"runArgs": ["--env-file", ".devcontainer/.devcontainer.env", "--ipc", "host", "--gpus", "all"],
+	// --env-file .devcontainer.env loads environment variables from the .devcontainer.env file
+	// --ipc host allows the container to access the host's shared memory
+	"workspaceFolder": "/workspaces/segment_vasculature",
+
+	"mounts": [
+	  	"source=${localEnv:SOURCE_TRAIN},target=/workspaces/segment_vasculature/train,type=bind",
+	  	"source=${localEnv:SOURCE_TEST},target=/workspaces/segment_vasculature/test,type=bind",
+	  	"source=${localEnv:SOURCE_MODEL},target=/workspaces/segment_vasculature/models/tencent_model,type=bind"
+	],
+
+	// Add the IDs of extensions you want installed when the container is created in the array below.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"GitHub.copilot",
+                "ms-python.python",
+                "ms-toolsai.jupyter",
+                "ms-vsliveshare.vsliveshare",
+				"ms-azuretools.vscode-docker"
+			]
+		}
+	}
+}
