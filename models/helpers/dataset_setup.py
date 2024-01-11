@@ -53,31 +53,29 @@ class CustomDataset(Dataset):
         image = preprocess_image(image_path)
         mask = preprocess_mask(mask_path)
         if self.augmentation_transforms:
-            image,mask=self.augmentation_transforms(image, mask, self.input_size)
+            image, mask=self.augmentation_transforms(image, mask, self.input_size)
         return image, mask
 
-def augment_image(image, mask, input_size):
-    
+def augment_image(image: torch.Tensor, mask: torch.Tensor, input_size):
     image_np = image.permute(1, 2, 0).numpy()
     mask_np = mask.numpy()
-
     transform = A.Compose([
         A.Resize(height=input_size[0], width=input_size[1], interpolation=cv2.INTER_NEAREST),
-        A.HorizontalFlip(p=0.5),
-        A.VerticalFlip(p=0.5),
-        A.ShiftScaleRotate(scale_limit=0.5, rotate_limit=45, shift_limit=0.1, p=0.8, border_mode=0),
-        A.RandomCrop(height=input_size[0], width=input_size[1], p=0.8),
-        A.RandomBrightness(p=0.9),
-        A.OneOf(
-            [
-                A.Blur(blur_limit=3, p=0.6),
-                A.MotionBlur(blur_limit=3, p=0.4),
-            ],
-            p=0.9,
-        ),
+        # A.HorizontalFlip(p=0.5),
+        # A.VerticalFlip(p=0.5),
+        # A.ShiftScaleRotate(scale_limit=0.5, rotate_limit=45, shift_limit=0.1, p=0.8, border_mode=0),
+        # A.RandomCrop(height=input_size[0], width=input_size[1], p=0.8),
+        # A.RandomBrightness(p=0.9),
+        # A.OneOf(
+        #     [
+        #         A.Blur(blur_limit=3, p=0.6),
+        #         A.MotionBlur(blur_limit=3, p=0.4),
+        #     ],
+        #     p=0.9,
+        # ),
     
     ])
-    augmented = transform(image = image_np,mask = mask_np)
+    augmented = transform(image = image_np, mask = mask_np)
     augmented_image, augmented_mask = augmented['image'], augmented['mask']
     
     augmented_image = torch.tensor(augmented_image, dtype=torch.float32).permute(2, 0, 1)

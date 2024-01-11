@@ -201,21 +201,25 @@ class ResNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
+        print(f"Output shape: {x.shape}")
         x = self.maxpool(x)
+        print(f"maxpool shape: {x.shape}")
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
+        print(f"layer4 shape: {x.shape}")
         x = self.conv_seg(x)
+        print(f"Output shape: {x.shape}")
 
         return x
 
 def resnet10(**kwargs):
-    """Constructs a ResNet-18 model.
+    """Constructs a ResNet-10 model.
     """
     model = ResNet(BasicBlock, [1, 1, 1, 1], **kwargs)
     return model

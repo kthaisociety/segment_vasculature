@@ -5,6 +5,22 @@ import time
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 from helpers.loss_functions import dice_coeff
+import wandb
+from torch.optim.lr_scheduler import LRScheduler
+from torch.nn.utils.clip_grad import clip_grad_value_
+
+def plot_images(sample, outputs, epoch: int, i: int, phase: str):
+    fig, ax = plt.subplot_mosaic([['true', 'pred'], ['img', 'img'], ['img', 'img']], layout='constrained')
+    img_shape = sample[1][0].shape
+    ax['true'].imshow(sample[1][0].reshape(img_shape))
+    ax['pred'].imshow(outputs.data.cpu().numpy()[0].reshape(img_shape))
+    ax['img'].imshow(np.transpose(sample[0][0], (1, 2, 0)))
+    fig.savefig(f"custom_model/eval_imgs/{phase}/{epoch}_{i}")
+    plt.clf()
+    plt.cla()
+    fig.clear()
+    plt.close()
+
 
 def get_default_device():
     if torch.cuda.is_available():
@@ -12,7 +28,19 @@ def get_default_device():
     else:
         return torch.device('cpu')
 
-def train_and_test(model: nn.Module, dataloaders: DataLoader, optimizer: torch.optim.Optimizer, criterion: nn.Module, num_epochs=100, show_images=False):
+def train_and_test(
+    model: nn.Module,
+    dataloaders: DataLoader,
+    optimizer: torch.optim.Optimizer,
+    criterion: torch.nn.Module,
+    w_b: bool = False,
+    scheduler: LRScheduler = None,
+    num_epochs=100,
+    show_images=False,
+    max_norm=1
+    ):
+
+    plotted_train_sample = False
     since = time.time()
     best_loss=1e10
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -35,7 +63,6 @@ def train_and_test(model: nn.Module, dataloaders: DataLoader, optimizer: torch.o
             else:
                 model.eval()
             for sample in iter(dataloaders[phase]):
-
                 inputs = sample[0].to(device)
                 masks = sample[1].to(device)
                 
@@ -44,11 +71,10 @@ def train_and_test(model: nn.Module, dataloaders: DataLoader, optimizer: torch.o
                 optimizer.zero_grad()
 
                 with torch.set_grad_enabled(phase == 'train'):
-                    print(sample[0].shape)
+                    print(f"Input before forward: {inputs.shape}")
                     outputs = model(inputs)
                     print(outputs.shape)
                     print(sample[1].shape)
-
                     loss = criterion(outputs, masks)
 
                     y_pred = outputs.data.cpu().numpy().ravel()
@@ -57,25 +83,24 @@ def train_and_test(model: nn.Module, dataloaders: DataLoader, optimizer: torch.o
                     batchsummary[f'{phase}_dice_coeff'].append(dice_coeff(y_pred, y_true))
 
                     if phase == 'train':
+    
+
                         loss.backward()
+                        #clip_grad_value_(model.parameters(), clip_value=max_norm)
                         optimizer.step()
 
                         batch_train_loss += loss.item() * sample[0].size(0)
+                        if show_images and not plotted_train_sample:
+                            plot_images(sample, outputs, epoch, i, phase)
+                            plotted_train_sample = True
+
 
                     else:
                         # Show plot of preds and plot of true
                         if show_images:
-                            fig, ax = plt.subplot_mosaic([['true', 'pred'], ['img', 'img'], ['img', 'img']], layout='constrained')
-                            img_shape = sample[1][0].shape
-                            ax['true'].imshow(sample[1][0].reshape(img_shape))
-                            ax['pred'].imshow(outputs.data.cpu().numpy()[0].reshape(img_shape))
-                            ax['img'].imshow(np.transpose(sample[0][0], (1, 2, 0)))
-                            fig.savefig(f"eval_imgs/eval_{epoch}_{i}")
-                            plt.clf()
-                            plt.cla()
-                            fig.clear()
-                            plt.close()
+                            plot_images(sample, outputs, epoch, i, phase)
                             i += 1
+                            plotted_train_sample = False
                         batch_test_loss += loss.item() * sample[0].size(0)
 
             if phase == 'train':
@@ -88,10 +113,16 @@ def train_and_test(model: nn.Module, dataloaders: DataLoader, optimizer: torch.o
             batchsummary['epoch'] = epoch
             
             print('{} Loss: {:.4f}'.format(phase, loss))
+            if w_b:
+                wandb.log({"epoch": epoch, f"{phase}_loss": loss})
 
+        if scheduler is not None:
+            scheduler.step()
         best_loss = np.max(batchsummary['val_dice_coeff'])
         for field in fieldnames[3:]:
             batchsummary[field] = np.mean(batchsummary[field])
+        if w_b:
+            wandb.log({"train_dice_coeff": batchsummary["train_dice_coeff"], "val_dice_coeff": batchsummary["val_dice_coeff"]})
         print(
             f'\t\t\t train_dice_coeff: {batchsummary["train_dice_coeff"]}, val_dice_coeff: {batchsummary["val_dice_coeff"]}')
 

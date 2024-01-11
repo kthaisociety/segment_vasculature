@@ -51,7 +51,7 @@ def test(data_loader, model, img_names, sets):
     for batch_id, batch_data in enumerate(data_loader):
         # forward
         volume = batch_data
-        print(volume.shape)
+        print(f"Volume shape: {volume.shape}")
         if not sets.no_cuda:
             volume = volume.cuda()
         with torch.no_grad():
@@ -100,8 +100,8 @@ if __name__ == '__main__':
     else:
         new_state_dict = checkpoint["state_dict"]
 
-    print(f"Epoch: {checkpoint['ecpoch']}")
-    print(f"Batch id: {checkpoint['batch_id']}")
+    #print(f"Epoch: {checkpoint['ecpoch']}")
+    #print(f"Batch id: {checkpoint['batch_id']}")
     net, _ = generate_model(sets)
     net.load_state_dict(new_state_dict)
 
