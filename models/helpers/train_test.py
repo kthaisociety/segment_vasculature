@@ -64,7 +64,7 @@ def train_and_test(
             else:
                 model.eval()
             print(f'Phase: {phase}')
-            for sample in tqdm(iter(dataloaders[phase])):
+            for sample in iter(dataloaders[phase]):
                 inputs = sample[0].to(device)
                 masks = sample[1].to(device)                
                 optimizer.zero_grad()
@@ -84,6 +84,7 @@ def train_and_test(
                         optimizer.step()
 
                         batch_train_loss += loss.item() * sample[0].size(0)
+                        print('Loss: {:.4f}'.format(loss.item() * sample[0].size(0)))
                         if show_images and not plotted_train_sample:
                             plot_images(sample, outputs, epoch, i, phase)
                             plotted_train_sample = True
@@ -106,7 +107,7 @@ def train_and_test(
 
             batchsummary['epoch'] = epoch
 
-            print('{} Loss: {:.4f}'.format(phase, loss))
+            print('Epoch {} Loss: {:.4f}'.format(phase, loss))
             if w_b:
                 wandb.log({"epoch": epoch, f"{phase}_loss": loss})
 
