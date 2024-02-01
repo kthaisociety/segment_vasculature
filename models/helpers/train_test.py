@@ -8,6 +8,7 @@ from helpers.loss_functions import dice_coeff
 import wandb
 from torch.optim.lr_scheduler import LRScheduler
 from torch.nn.utils.clip_grad import clip_grad_value_
+from tqdm import tqdm
 
 def plot_images(sample, outputs, epoch: int, i: int, phase: str):
     fig, ax = plt.subplot_mosaic([['true', 'pred'], ['img', 'img'], ['img', 'img']], layout='constrained')
@@ -62,19 +63,14 @@ def train_and_test(
                 model.train()
             else:
                 model.eval()
-            for sample in iter(dataloaders[phase]):
+            print(f'Phase: {phase}')
+            for sample in tqdm(iter(dataloaders[phase])):
                 inputs = sample[0].to(device)
-                masks = sample[1].to(device)
-                
-                #masks = masks.unsqueeze(1)
-                
+                masks = sample[1].to(device)                
                 optimizer.zero_grad()
 
                 with torch.set_grad_enabled(phase == 'train'):
-                    print(f"Input before forward: {inputs.shape}")
                     outputs = model(inputs)
-                    print(f"Predicted Mask shape: {outputs.shape}")
-                    print(f"Mask shape: {sample[1].shape}")
                     loss = criterion(outputs, masks)
 
                     y_pred = outputs.data.cpu().numpy().ravel()
@@ -83,8 +79,6 @@ def train_and_test(
                     batchsummary[f'{phase}_dice_coeff'].append(dice_coeff(y_pred, y_true))
 
                     if phase == 'train':
-    
-
                         loss.backward()
                         #clip_grad_value_(model.parameters(), clip_value=max_norm)
                         optimizer.step()
@@ -111,7 +105,7 @@ def train_and_test(
                 val_epoch_losses.append(epoch_test_loss)
 
             batchsummary['epoch'] = epoch
-            
+
             print('{} Loss: {:.4f}'.format(phase, loss))
             if w_b:
                 wandb.log({"epoch": epoch, f"{phase}_loss": loss})
