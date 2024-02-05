@@ -73,8 +73,8 @@ def train_and_test(
                 with torch.set_grad_enabled(phase == 'train'):
                     print(f"Input before forward: {inputs.shape}")
                     outputs = model(inputs)
-                    print(outputs.shape)
-                    print(sample[1].shape)
+                    print(f"Predicted Mask shape: {outputs.shape}")
+                    print(f"Mask shape: {sample[1].shape}")
                     loss = criterion(outputs, masks)
 
                     y_pred = outputs.data.cpu().numpy().ravel()

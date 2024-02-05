@@ -205,7 +205,7 @@ class ResNet(nn.Module):
         x = self.conv1(x)
         x = self.bn1(x)
         x = self.relu(x)
-        print(f"Output shape: {x.shape}")
+        print(f"After conv1 shape: {x.shape}")
         x = self.maxpool(x)
         print(f"maxpool shape: {x.shape}")
         x = self.layer1(x)
@@ -214,7 +214,7 @@ class ResNet(nn.Module):
         x = self.layer4(x)
         print(f"layer4 shape: {x.shape}")
         x = self.conv_seg(x)
-        print(f"Output shape: {x.shape}")
+        print(f"After conv_seg shape: {x.shape}")
 
         return x
 
